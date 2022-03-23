@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyb.serviceedu.mapper.EduCourseMapper">
+
+    <select id="getPublishCourseInfo" resultType="com.hyb.serviceedu.entity.vo.EduCoursePublishQuery">
+        SELECT
+            ec.id,ec.title,ec.lesson_num as lessonNum,ec.price,ec.cover,
+            ecd.description,et.id as teacherId,et.`name` as teacherName,
+               et.avatar as teacherAvatar,
+               et.intro,et.career,
+               ones.id as subjectLevelOneId,
+               ones.title as subjectLevelOne,
+               twos.id as subjectLevelTwoId,
+               twos.title as subjectLevelTwo
+        FROM edu_course ec
+                 left outer join
+             edu_course_description ecd on ec.id=ecd.id
+                 left outer join
+             edu_teacher et on ec.teacher_id=et.id
+                 left outer join
+             edu_subject ones on ec.subject_id=ones.id
+                 left outer join
+             edu_subject twos on ec.subject_parent_id=twos.id
+        where ec.id=#{courseId}
+    </select>
+    <select id="getPublishCourseInfoByTeacherId"
+            resultType="com.hyb.serviceedu.entity.vo.EduCoursePublishQuery">
+        SELECT
+            ec.id,ec.title,ec.lesson_num as lessonNum,ec.price,ec.cover,
+            ecd.description,et.`name` as teacherName,ones.title as subjectLevelOne,twos.title as subjectLevelTwo
+        FROM edu_course ec
+                 left outer join
+             edu_course_description ecd on ec.id=ecd.id
+                 left outer join
+             edu_teacher et on ec.teacher_id=et.id
+                 left outer join
+             edu_subject ones on ec.subject_id=ones.id
+                 left outer join
+             edu_subject twos on ec.subject_parent_id=twos.id
+        where ec.teacher_id=#{teacherId}
+    </select>
+
+</mapper>

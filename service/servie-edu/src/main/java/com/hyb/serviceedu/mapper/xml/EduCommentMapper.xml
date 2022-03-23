@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyb.serviceedu.mapper.EduCommentMapper">
+
+    <select id="getFirstEduComment" resultType="com.hyb.serviceedu.entity.vo.EduCommentQuery">
+
+        select
+            ec.id,
+            ec.course_id as courseId,
+            ec.rep_member_id as repMemberId,
+            um.nickname as repNickName,
+            ec.member_id as memberId,
+            um.nickname,
+            um.avatar,
+            ec.content,
+           ec.parent_id as parentId,
+            ec.gmt_create as gmtCreate
+        from edu_comment ec
+                 left outer join ucenter_member um on ec.member_id=um.id
+        where ec.rep_member_id=#{parentId} and ec.course_id=#{courseId}
+        order by ec.gmt_create desc limit #{low},#{size}
+
+
+    </select>
+    <select id="getSecondEduComment" resultType="com.hyb.serviceedu.entity.vo.EduCommentQuery">
+
+        select
+            ec.id,
+            ec.course_id as courseId,
+            ec.rep_member_id as repMemberId,
+            rum.nickname as repNickName,
+            ec.member_id as memberId,
+            um.nickname,
+            um.avatar,
+            ec.content,
+            ec.parent_id as parentId,
+            ec.gmt_create as gmtCreate
+        from edu_comment ec
+                 left outer join ucenter_member um on ec.member_id=um.id
+                 left outer join ucenter_member rum on ec.rep_member_id=rum.id
+        where ec.rep_member_id!=#{parentId} and ec.course_id=#{courseId}
+        order by ec.gmt_create desc
+    </select>
+</mapper>
