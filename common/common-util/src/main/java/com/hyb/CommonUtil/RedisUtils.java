@@ -23,6 +23,10 @@ public class RedisUtils implements InitializingBean {
         template.expire(key,timeout, timeUnit);
     }
 
+    public static void set(String key,String value,long timeout,TimeUnit timeUnit){
+        template.opsForValue().set(key,value,timeout,timeUnit);
+    }
+
     public static long countHash(String hashKey){
         return template.opsForHash().size(hashKey);
     }
