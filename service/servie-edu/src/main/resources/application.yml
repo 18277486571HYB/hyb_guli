@@ -1,6 +1,16 @@
 server:
   port: 8001
-
+auth-server: http://localhost:8085/uac
+security:
+  oauth2:
+    client:
+      client-id: admin
+      client-secret: 123456
+      user-authorization-uri: ${auth-server}/oauth/authorize
+      access-token-uri: ${auth-server}/oauth/token
+    resource:
+      jwt:
+        key-uri: ${auth-server}/oauth/token_key
 spring:
   application:
     name: service-edu

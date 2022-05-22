@@ -1,6 +1,16 @@
 server:
   port: 4000
-
+#auth-server: http://localhost:8085/uac
+#security:
+#  oauth2:
+#    client:
+#      client-id: sheep1
+#      client-secret: 123456
+#      user-authorization-uri: ${auth-server}/oauth/authorize
+#      access-token-uri: ${auth-server}/oauth/token
+#    resource:
+#      jwt:
+#        key-uri: ${auth-server}/oauth/token_key
 spring:
   application:
     name: gateway
@@ -13,6 +23,12 @@ spring:
           uri: lb://service-cms
           predicates:
             - Path=/servicecms/**
+        - id: service-edu
+          uri: lb://service-edu
+          predicates:
+            - Path=/serviceedu/**
+#          filters:
+#            - RewritePath=/renren/search/(?<segment>.*), /mallsearch$\{segment}
     nacos:
       discovery:
         server-addr: 192.168.216.1:8848
