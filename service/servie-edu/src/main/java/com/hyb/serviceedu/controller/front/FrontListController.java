@@ -20,7 +20,7 @@ import java.util.List;
 @Api(tags = "前台课程和讲师数据展示")
 @RestController
 @RequestMapping("/serviceedu/front")
-@CrossOrigin
+//@CrossOrigin
 public class FrontListController {
 
     @Autowired

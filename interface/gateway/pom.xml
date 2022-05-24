@@ -17,7 +17,6 @@
     </properties>
     <dependencies>
         <!--对全栈web开发的支持， 包括Tomcat和spring-webmvc-->
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
@@ -26,7 +25,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-<!--        <dependency>-->
+        <!--        <dependency>-->
 <!--            <groupId>org.apache.tomcat.embed</groupId>-->
 <!--            <artifactId>tomcat-embed-core</artifactId>-->
 <!--        </dependency>-->

@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,7 +28,7 @@ import java.util.Enumeration;
 public class TestController {
 
     @GetMapping("/get")
-    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
+//    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
     public String get(){
 
         System.out.println("函数进来了");
