@@ -3,12 +3,14 @@ package com.hyb.CommonUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Order(0)
 public class RedisUtils implements InitializingBean {
 
     @Autowired
@@ -22,6 +24,16 @@ public class RedisUtils implements InitializingBean {
 //        System.out.println(redisTemplate.opsForHash().size("loginCount"));
         template.expire(key,timeout, timeUnit);
     }
+
+    public static void set(String key,String value,long timeout,TimeUnit timeUnit){
+        template.opsForValue().set(key,value,timeout,timeUnit);
+    }
+
+    public static String get(String key,String value,long timeout,TimeUnit timeUnit){
+        return template.opsForValue().get(key);
+    }
+
+
 
     public static long countHash(String hashKey){
         return template.opsForHash().size(hashKey);

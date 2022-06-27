@@ -15,9 +15,4 @@ public class GlobalExceptionHandler {
         return Msg.fail().data("error message","未知异常");
     }
 
-    @ExceptionHandler(HybException.class)
-    @ResponseBody
-    public Msg HybExceptionHandler(HybException hybException){
-        return Msg.fail().data("code",hybException.getCode()).data("error message",hybException.getMsg());
-    }
 }

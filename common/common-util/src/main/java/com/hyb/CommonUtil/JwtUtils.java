@@ -54,17 +54,17 @@ public class JwtUtils {
      * @param request
      * @return
      */
-    public static boolean checkToken(HttpServletRequest request) {
-        try {
-            String jwtToken = request.getHeader("token");
-            if(StringUtils.isEmpty(jwtToken)) return false;
-            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
+//    public static boolean checkToken(HttpServletRequest request) {
+//        try {
+//            String jwtToken = request.getHeader("token");
+//            if(StringUtils.isEmpty(jwtToken)) return false;
+//            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//        return true;
+//    }
     /**
      * 根据token获取会员id
      * @param request
@@ -77,6 +77,23 @@ public class JwtUtils {
                 Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
         Claims claims = claimsJws.getBody();
         return (String)claims.get("id");
+    }
+//    public static Claims getMemberClaims(HttpServletRequest request) {
+//        String jwtToken = request.getHeader("token");
+//        if(StringUtils.isEmpty(jwtToken))
+//            return null;
+//        Jws<Claims> claimsJws =
+//                Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
+//        return claimsJws.getBody();
+//
+//    }
+    public static Claims getMemberClaims(String jwtToken) {
+        if(StringUtils.isEmpty(jwtToken))
+            return null;
+        Jws<Claims> claimsJws =
+                Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
+        return claimsJws.getBody();
+
     }
 
     public static String getMemberIdByJwtTokenByHeader(String header) {
