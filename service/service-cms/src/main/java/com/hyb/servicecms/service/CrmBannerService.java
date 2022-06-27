@@ -21,4 +21,6 @@ public interface CrmBannerService extends IService<CrmBanner> {
     IPage<CrmBanner> getBannerListForKey(Integer current, Integer limit, CrmBannerQuery crmBannerQuery);
 
     List<CrmBanner> getList(QueryWrapper<CrmBanner> crmBannerQueryWrapper);
+
+    void updateBanner(CrmBanner crmBanner);
 }

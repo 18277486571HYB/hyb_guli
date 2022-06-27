@@ -8,7 +8,9 @@ import com.hyb.servicecms.entity.vo.CrmBannerQuery;
 import com.hyb.servicecms.mapper.CrmBannerMapper;
 import com.hyb.servicecms.service.CrmBannerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -56,8 +58,24 @@ public class CrmBannerServiceImpl extends ServiceImpl<CrmBannerMapper, CrmBanner
     }
 
     @Override
-    @Cacheable(key = "'banner'",value = "getList")
+    @Cacheable(key = "'getList'",value = "banner")
     public List<CrmBanner> getList(QueryWrapper<CrmBanner> crmBannerQueryWrapper) {
         return this.list(crmBannerQueryWrapper);
+    }
+
+    //@CachePut支持双写,一般用于插入
+    //写入数据库同时将返回的数据缓存
+
+    //将banner分区下,key为getList的缓存删除
+//    @Caching(
+//            evict = {
+//                    @CacheEvict(key = "'getList'",value = "banner")
+//            }
+//    )
+    @Override
+    //将banner分区所有缓存删除
+    @CacheEvict(value = "'banner'",allEntries = true)
+    public void updateBanner(CrmBanner crmBanner) {
+        this.updateById(crmBanner);
     }
 }

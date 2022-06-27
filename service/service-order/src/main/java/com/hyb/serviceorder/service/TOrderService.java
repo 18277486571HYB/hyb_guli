@@ -18,4 +18,6 @@ public interface TOrderService extends IService<TOrder> {
     String createOrder(String courseId, HttpServletRequest request);
 
     boolean isPerchase(String courseId, String userId);
+
+    void closedOrder(TOrder order);
 }

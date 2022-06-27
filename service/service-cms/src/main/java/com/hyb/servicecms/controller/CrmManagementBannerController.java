@@ -99,10 +99,7 @@ public class CrmManagementBannerController {
         if (!msg.getSuccess()){
             return msg;
         }
-        boolean save = crmBannerService.updateById(crmBanner);
-        if (!save){
-            return Msg.fail().message("更新失败");
-        }
+        crmBannerService.updateBanner(crmBanner);
         return Msg.success();
     }
 

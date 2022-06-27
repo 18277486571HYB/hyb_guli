@@ -10,6 +10,7 @@ import com.hyb.serviceorder.service.TOrderService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/serviceorder/torder")
 @CrossOrigin
 public class TOrderController {
+
+
 
     @Autowired
     TOrderService orderService;
@@ -62,6 +65,15 @@ public class TOrderController {
         boolean isPerchase=orderService.isPerchase(courseId,userId);
         return isPerchase?Msg.success():Msg.fail();
 
+    }
+
+    @GetMapping("/getStatus/{orderNo}")
+    public Integer getStatus(@PathVariable("orderNo") String orderNo){
+        TOrder byId = orderService.getById(orderNo);
+        if (byId!=null){
+            return byId.getStatus();
+        }
+        return -1;
     }
 
 

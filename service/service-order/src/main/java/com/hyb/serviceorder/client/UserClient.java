@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-@FeignClient(value = "service-center")
+@FeignClient(value = "service-center",fallback = UserError.class)
 public interface UserClient {
     @GetMapping(value = "/servicecenter/ucenterMember/getUserInfo/{header}")
     public UcenterMember getUserInfo(@PathVariable("header")String header);

@@ -35,13 +35,9 @@ public class FrontListController {
         if (StringUtils.isEmpty(limit)){
             limit=8;
         }
-        QueryWrapper<EduCourse> eduCourseQueryWrapper = new QueryWrapper<>();
 
-        eduCourseQueryWrapper.orderByDesc("view_count","buy_count");
 
-        eduCourseQueryWrapper.last("limit "+limit);
-
-        List<EduCourse> list = eduCourseService.list(eduCourseQueryWrapper);
+        List<EduCourse> list = eduCourseService.listCourse(limit);
 
         return list.size()==0?Msg.fail():Msg.success().data("list",list);
 

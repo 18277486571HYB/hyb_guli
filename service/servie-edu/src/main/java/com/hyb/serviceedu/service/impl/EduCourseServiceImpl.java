@@ -1,5 +1,7 @@
 package com.hyb.serviceedu.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,13 +14,15 @@ import com.hyb.serviceedu.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -48,6 +52,9 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
 
     @Autowired
     EduCourseService eduCourseService;
+
+    @Autowired
+    RedisTemplate<String,String> redisTemplate;
 
     @Override
     public EduCourse saveCourse(EduCourseQuery eduCourseQuery) {
@@ -207,6 +214,93 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     @Override
     public List<EduCoursePublishQuery> getCourseByTeacherId(String id) {
         return baseMapper.getPublishCourseInfoByTeacherId(id);
+    }
+
+
+    /*
+    * 1. 空结果缓存: 解决缓存穿透问题
+    * 2. 随机的过期时间: 解决缓存雪崩问题
+    * 3. 加锁: 解锁缓存击穿问题
+    * */
+
+    @Override
+    public List<EduCourse> listCourse(Integer limit) {
+        return redisLock(limit);
+    }
+
+    private List<EduCourse> list(Integer limit){
+        QueryWrapper<EduCourse> eduCourseQueryWrapper = new QueryWrapper<>();
+        eduCourseQueryWrapper.orderByDesc("view_count","buy_count");
+        eduCourseQueryWrapper.last("limit "+limit);
+        return this.list(eduCourseQueryWrapper);
+    }
+
+    private List<EduCourse> redisLock(Integer limit) {
+
+        String frontCourse = redisTemplate.opsForValue().get("frontCourse");
+        //占分布式锁
+        //设置UUID防止被别人删除
+        String uuid = UUID.randomUUID().toString();
+        //setIfAbsent 将设置过期时间和加锁这两个操作是原子操作
+        //防止有删除锁的线程阻塞,导致该线程锁过期,其他线程获取锁,但是线程不阻塞后会误删其他锁
+        if (frontCourse!=null){
+            return JSON.parseObject(frontCourse,new TypeReference<List<EduCourse>>(){});
+        }
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid, 3000, TimeUnit.MILLISECONDS);
+        if (Boolean.TRUE.equals(lock)){
+            //加上try的原因是防止redisList过慢导致先删除了key
+            List<EduCourse> eduCourses;
+            try{
+                eduCourses = redisList(limit);
+            }finally {
+                //第一种方案:
+                //执行成功后要解锁
+                //为了防止别的线程删除自己,所以做比较
+                //但是这样在比较过程可能会出现网络延迟,还是会出现删除别人锁的情况
+                //所以一定要做成原子操作
+//            String lockValue = redisTemplate.opsForValue().get("lock");
+//            if (Objects.equals(lockValue, uuid)){
+//                redisTemplate.delete(uuid);
+//            }
+                //第二种方案,使用lua脚本实现
+                String s="if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+
+                redisTemplate.execute(new DefaultRedisScript<>(s,Integer.class),Arrays.asList(uuid),uuid);
+
+            }
+            return eduCourses;
+        }else {
+            //自旋获取锁
+            return redisLock(limit);
+        }
+
+    }
+
+    private List<EduCourse> redisList(Integer limit){
+        String frontCourse = redisTemplate.opsForValue().get("frontCourse");
+
+        if (frontCourse==null){
+
+            List<EduCourse> list = list(limit);
+
+            Random random = new Random();
+
+            redisTemplate.opsForValue().set("frontCourse", String.valueOf(list),random.nextInt(100)+200, TimeUnit.HOURS);
+
+            return list;
+        }
+
+        return JSON.parseObject(frontCourse,new TypeReference<List<EduCourse>>(){});
+
+    }
+
+    private List<EduCourse> synchronizedLock(Integer limit) {
+        synchronized (this){
+            QueryWrapper<EduCourse> eduCourseQueryWrapper = new QueryWrapper<>();
+            eduCourseQueryWrapper.orderByDesc("view_count","buy_count");
+            eduCourseQueryWrapper.last("limit "+limit);
+            return this.list(eduCourseQueryWrapper);
+        }
     }
 
 

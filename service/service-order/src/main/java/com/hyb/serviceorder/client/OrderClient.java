@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Component
-@FeignClient(value = "service-edu")
+@FeignClient(value = "service-edu",fallback = OrderError.class)
 public interface OrderClient {
 
     @GetMapping("/serviceedu/eduCourse/getCourseByIdForCourse/{courseId}")

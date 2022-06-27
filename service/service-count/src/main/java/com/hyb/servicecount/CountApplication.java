@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 @EnableFeignClients
 @ComponentScan("com.hyb")
-@EnableScheduling
+
 public class CountApplication {
     public static void main(String[] args) {
         SpringApplication.run(CountApplication.class,args);

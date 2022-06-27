@@ -6,6 +6,8 @@ import com.hyb.serviceedu.service.EduSubjectService;
 import com.hyb.serviceedu.service.EduTeacherService;
 import com.hyb.serviceedu.subject.SubjectClassification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +31,10 @@ public class EduSubjectController {
     @Autowired
     EduSubjectService eduSubjectService;
 
+
     @PostMapping("/upExcel")
     public Msg upExcel(MultipartFile file) throws IOException {
+
 
         try {
             eduSubjectService.saveSubject(file,eduSubjectService);

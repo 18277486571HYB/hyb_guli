@@ -6,6 +6,9 @@ import com.hyb.servicecount.entity.StatisticsDaily;
 import com.hyb.servicecount.service.StatisticsDailyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +17,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Component
+@EnableScheduling
+@EnableAsync
 public class CountSchedule {
 
     @Autowired
     StatisticsDailyService dailyService;
 
+    /*
+    * 定时任务默认是阻塞,也就是说,如果该系统里有多个定时任务,某个定时任务阻塞,下一个定时任务就得阻塞
+    * 可以使用@EnableAsync+@Async的方式实现异步任务
+    * 该方式由TaskExecutionAutoConfiguration类自动配置,属性来自TaskExecutionProperties
+    * */
+
     //凌晨一点
+    @Async
     @Scheduled(cron = "0 0 1 * * ?")
     public void insertChart(){
         long loginCount = RedisUtils.countHash("loginCount");

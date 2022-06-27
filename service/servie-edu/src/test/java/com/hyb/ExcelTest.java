@@ -3,14 +3,27 @@ package com.hyb;
 import com.alibaba.excel.EasyExcel;
 import com.hyb.easy.ExcelDemo;
 import com.hyb.easy.ExcelListener;
-import org.junit.Test;
+import com.hyb.serviceedu.ServiceEduApplication;
+
+import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = ServiceEduApplication.class)
 public class ExcelTest {
+
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    @Test
+    public void setRedissonClient(){
+        System.out.println(redissonClient);
+    }
 
     @Test
     public void testWriteExcel(){

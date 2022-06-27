@@ -32,4 +32,6 @@ public interface EduCourseService extends IService<EduCourse> {
 
 
     List<EduCoursePublishQuery> getCourseByTeacherId(String id);
+
+    List<EduCourse> listCourse(Integer limit);
 }
